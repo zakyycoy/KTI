@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EduTask SMA - Manajemen Tugas</title>
+  
+  <!-- Font & Icons -->
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <style>
+    :root {
+      --primary: #4f46e5;
+      --primary-hover: #4338ca;
+      --bg: #f8fafc;
+      --card-bg: #ffffff;
+      --text: #1e293b;
+      --text-muted: #64748b;
+      --border: #e2e8f0;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      --radius: 14px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      font-size: 16px;
+      padding: 2rem 1rem;
+      display: flex;
+      justify-content: center;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 1000px;
+    }
+
+    /* Header */
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2rem;
+      background: var(--card-bg);
+      padding: 1.5rem 1.75rem;
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .brand i {
+      font-size: 1.8rem;
+      color: var(--primary);
+    }
+
+    .brand h1 {
+      font-size: 1.5rem;
+      font-weight: 700;
+    }
+
+    .btn-add {
+      background: var(--primary);
+      color: white;
+      border: none;
+      padding: 0.85rem 1.4rem;
+      border-radius: 10px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      transition: background 0.2s;
+    }
+
+    .btn-add:hover {
+      background: var(--primary-hover);
+    }
+
+    /* Stats Ringkasan */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1.25rem;
+      margin-bottom: 2rem;
+    }
+
+    .stat-card {
+      background: var(--card-bg);
+      padding: 1.25rem 1.5rem;
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .stat-icon {
+      width: 50px;
+      height: 50px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.3rem;
+    }
+
+    .icon-total { background: #e0e7ff; color: var(--primary); }
+    .icon-pending { background: #fef3c7; color: var(--warning); }
+    .icon-done { background: #d1fae5; color: var(--success); }
+
+    .stat-info p {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+    }
+
+    .stat-info h3 {
+      font-size: 1.5rem;
+      font-weight: 700;
+    }
+
+    /* Layout Konten Utama */
+    .section-title {
+      font-size: 1.2rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .task-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(310px, 1fr));
+      gap: 1.25rem;
+      margin-bottom: 2.5rem;
+    }
+
+    /* Kartu Tugas */
+    .task-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.25rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+    }
+
+    .task-card.completed-card {
+      opacity: 0.75;
+      background: #f1f5f9;
+    }
+
+    .task-top {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 0.75rem;
+    }
+
+    .badge {
+      font-size: 0.8rem;
+      font-weight: 700;
+      padding: 0.3rem 0.7rem;
+      border-radius: 20px;
+      text-transform: uppercase;
+    }
+
+    .badge-mapel { background: #e2e8f0; color: var(--text); }
+    .badge-tinggi { background: #fee2e2; color: var(--danger); }
+    .badge-sedang { background: #fef3c7; color: var(--warning); }
+    .badge-rendah { background: #e0e7ff; color: var(--primary); }
+
+    .task-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+    }
+
+    .task-desc {
+      font-size: 0.95rem;
+      color: var(--text-muted);
+      margin-bottom: 1.25rem;
+      line-height: 1.4;
+    }
+
+    .task-bottom {
+      border-top: 1px solid var(--border);
+      padding-top: 0.85rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    .task-actions {
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .action-btn {
+      border: none;
+      background: #f1f5f9;
+      cursor: pointer;
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      font-size: 1rem;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+    }
+
+    .action-btn.check:hover { background: var(--success); color: white; }
+    .action-btn.undo:hover { background: var(--warning); color: white; }
+    .action-btn.delete:hover { background: var(--danger); color: white; }
+
+    .empty-box {
+      background: var(--card-bg);
+      border: 1px dashed var(--border);
+      padding: 2rem;
+      border-radius: var(--radius);
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 0.95rem;
+    }
+
+    /* Modal Form */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.5);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      padding: 1rem;
+      z-index: 100;
+    }
+
+    .modal {
+      background: var(--card-bg);
+      width: 100%;
+      max-width: 500px;
+      border-radius: 16px;
+      padding: 1.75rem;
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.25rem;
+    }
+
+    .form-group {
+      margin-bottom: 1.1rem;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 0.9rem;
+      font-weight: 600;
+      margin-bottom: 0.4rem;
+    }
+
+    .form-control {
+      width: 100%;
+      padding: 0.75rem 0.9rem;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      font-size: 0.95rem;
+      outline: none;
+      background-color: #fff;
+    }
+
+    .form-control:focus {
+      border-color: var(--primary);
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+
+    .modal-footer {
+      display: flex;
+      justify-content: flex-end;
+      gap: 0.75rem;
+      margin-top: 1.5rem;
+    }
+
+    /* Footer Pengembang */
+    .footer {
+      margin-top: 3rem;
+      padding: 1.5rem 1rem;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 0.95rem;
+    }
+
+    .footer p {
+      margin: 0.25rem 0;
+    }
+
+    .footer strong {
+      color: var(--text);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <!-- Header Utama -->
+    <header class="header">
+      <div class="brand">
+        <i class="fa-solid fa-graduation-cap"></i>
+        <h1>EduTask SMA</h1>
+      </div>
+      <button class="btn-add" onclick="openModal()">
+        <i class="fa-solid fa-plus"></i> Tambah Tugas
+      </button>
+    </header>
+
+    <!-- Stat Ringkasan -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-icon icon-total"><i class="fa-solid fa-book"></i></div>
+        <div class="stat-info">
+          <p>Total Tugas</p>
+          <h3 id="stat-total">0</h3>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon icon-pending"><i class="fa-solid fa-clock"></i></div>
+        <div class="stat-info">
+          <p>Belum Selesai</p>
+          <h3 id="stat-pending">0</h3>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon icon-done"><i class="fa-solid fa-circle-check"></i></div>
+        <div class="stat-info">
+          <p>Sudah Selesai</p>
+          <h3 id="stat-completed">0</h3>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bagian 1: Tugas Belum Selesai -->
+    <h2 class="section-title"><i class="fa-solid fa-hourglass-half" style="color:var(--warning)"></i> Tugas Belum Selesai</h2>
+    <div id="pending-list" class="task-grid"></div>
+
+    <!-- Bagian 2: Tugas Sudah Selesai -->
+    <h2 class="section-title"><i class="fa-solid fa-check-double" style="color:var(--success)"></i> Tugas Sudah Selesai</h2>
+    <div id="completed-list" class="task-grid"></div>
+
+    <!-- Footer Identitas Pengembang -->
+    <footer class="footer">
+      <p>Pengembang: <strong>Muhammad Dzaky Farhat</strong></p>
+      <p>Kelas: <strong>XI International 1</strong></p>
+    </footer>
+  </div>
+
+  <!-- Modal Input Tugas -->
+  <div class="modal-backdrop" id="modal-task">
+    <div class="modal">
+      <div class="modal-header">
+        <h3>Tambah Tugas Baru</h3>
+        <button onclick="closeModal()" style="border:none; background:none; cursor:pointer; font-size:1.2rem;"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <form id="task-form" onsubmit="saveTask(event)">
+        <div class="form-group">
+          <label>Judul Tugas / Materi</label>
+          <input type="text" id="task-title" class="form-control" placeholder="Contoh: Latihan Soal Bab 2" required>
+        </div>
+        
+        <!-- Pilihan Mata Pelajaran -->
+        <div class="form-group">
+          <label>Mata Pelajaran</label>
+          <select id="task-subject" class="form-control" required>
+            <option value="" disabled selected>-- Pilih Mata Pelajaran --</option>
+            <option value="MATEMATIKA">MATEMATIKA</option>
+            <option value="FISIKA">FISIKA</option>
+            <option value="BIOLOGI">BIOLOGI</option>
+            <option value="KIMIA">KIMIA</option>
+            <option value="SEJARAH">SEJARAH</option>
+            <option value="SOSIOLOGI">SOSIOLOGI</option>
+            <option value="GEOGRAFI">GEOGRAFI</option>
+            <option value="EKONOMI">EKONOMI</option>
+            <option value="B INGGRIS">B INGGRIS</option>
+            <option value="B INDONESIA">B INDONESIA</option>
+            <option value="AGAMA">AGAMA</option>
+            <option value="BIMBINGAN KONSELING">BIMBINGAN KONSELING</option>
+          </select>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Tenggat Waktu</label>
+            <input type="date" id="task-deadline" class="form-control" required>
+          </div>
+          <div class="form-group">
+            <label>Prioritas</label>
+            <select id="task-priority" class="form-control">
+              <option value="Rendah">Rendah</option>
+              <option value="Sedang" selected>Sedang</option>
+              <option value="Tinggi">Tinggi</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Catatan Tambahan</label>
+          <textarea id="task-desc" class="form-control" rows="3" placeholder="Contoh: Kerjakan nomor 1-5 di buku PR."></textarea>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn-add" style="background:#e2e8f0; color:var(--text);" onclick="closeModal()">Batal</button>
+          <button type="submit" class="btn-add">Simpan Tugas</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    let tasks = JSON.parse(localStorage.getItem('edutask_simple')) || [
+      {
+        id: 1,
+        title: "Latihan Soal Matriks",
+        subject: "MATEMATIKA",
+        deadline: "2026-08-20",
+        priority: "Tinggi",
+        desc: "Kerjakan latihan 3.2 di buku pendamping.",
+        completed: false
+      },
+      {
+        id: 2,
+        title: "Rangkuman Kerajaan Hindu-Buddha",
+        subject: "SEJARAH",
+        deadline: "2026-08-18",
+        priority: "Sedang",
+        desc: "Materi Kerajaan Majapahit dan Singasari.",
+        completed: true
+      }
+    ];
+
+    function saveAndRender() {
+      localStorage.setItem('edutask_simple', JSON.stringify(tasks));
+      renderTasks();
+    }
+
+    function openModal() { document.getElementById('modal-task').style.display = 'flex'; }
+    function closeModal() { 
+      document.getElementById('modal-task').style.display = 'none'; 
+      document.getElementById('task-form').reset();
+    }
+
+    function saveTask(e) {
+      e.preventDefault();
+      const newTask = {
+        id: Date.now(),
+        title: document.getElementById('task-title').value,
+        subject: document.getElementById('task-subject').value,
+        deadline: document.getElementById('task-deadline').value,
+        priority: document.getElementById('task-priority').value,
+        desc: document.getElementById('task-desc').value,
+        completed: false
+      };
+      tasks.push(newTask);
+      saveAndRender();
+      closeModal();
+    }
+
+    function toggleStatus(id) {
+      tasks = tasks.map(t => t.id === id ? { ...t, completed: !t.completed } : t);
+      saveAndRender();
+    }
+
+    function deleteTask(id) {
+      tasks = tasks.filter(t => t.id !== id);
+      saveAndRender();
+    }
+
+    function createCard(t) {
+      const prioClass = `badge-${t.priority.toLowerCase()}`;
+      return `
+        <div class="task-card ${t.completed ? 'completed-card' : ''}">
+          <div>
+            <div class="task-top">
+              <span class="badge badge-mapel">${t.subject}</span>
+              <span class="badge ${prioClass}">${t.priority}</span>
+            </div>
+            <div class="task-title">${t.title}</div>
+            <div class="task-desc">${t.desc || 'Tidak ada catatan.'}</div>
+          </div>
+          <div class="task-bottom">
+            <span><i class="fa-regular fa-calendar"></i> ${t.deadline}</span>
+            <div class="task-actions">
+              <button class="action-btn ${t.completed ? 'undo' : 'check'}" 
+                      title="${t.completed ? 'Batal Selesai' : 'Tandai Selesai'}" 
+                      onclick="toggleStatus(${t.id})">
+                <i class="fa-solid ${t.completed ? 'fa-rotate-left' : 'fa-check'}"></i>
+              </button>
+              <button class="action-btn delete" title="Hapus Tugas" onclick="deleteTask(${t.id})">
+                <i class="fa-solid fa-trash"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderTasks() {
+      const pending = tasks.filter(t => !t.completed);
+      const completed = tasks.filter(t => t.completed);
+
+      document.getElementById('stat-total').innerText = tasks.length;
+      document.getElementById('stat-pending').innerText = pending.length;
+      document.getElementById('stat-completed').innerText = completed.length;
+
+      const pendingContainer = document.getElementById('pending-list');
+      if (pending.length === 0) {
+        pendingContainer.innerHTML = `<div class="empty-box" style="grid-column: 1/-1;">Tidak ada tugas yang sedang dikerjakan.</div>`;
+      } else {
+        pendingContainer.innerHTML = pending.map(createCard).join('');
+      }
+
+      const completedContainer = document.getElementById('completed-list');
+      if (completed.length === 0) {
+        completedContainer.innerHTML = `<div class="empty-box" style="grid-column: 1/-1;">Belum ada tugas yang diselesaikan.</div>`;
+      } else {
+        completedContainer.innerHTML = completed.map(createCard).join('');
+      }
+    }
+
+    renderTasks();
+  </script>
+</body>
+</html>
