@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EduTask SMA - Manajemen Tugas</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <div class="overlay" onclick="closeSidebar()"></div>
+
+  <!-- Sidebar (desktop: tetap tampil / mobile: laci geser) -->
+  <aside class="sidebar" id="sidebar">
+    <div class="brand">
+      <div class="brand-icon"><i class="fa-solid fa-graduation-cap"></i></div>
+      <div class="brand-text">
+        <h1>EduTask</h1>
+        <span>Manajemen Tugas SMA</span>
+      </div>
+    </div>
+
+    <nav class="nav-links">
+      <button class="nav-btn active" data-page="home" onclick="switchPage('home', event)">
+        <i class="fa-solid fa-house"></i> Beranda
+      </button>
+      <button class="nav-btn" data-page="pending" onclick="switchPage('pending', event)">
+        <i class="fa-solid fa-hourglass-half"></i> Belum Selesai
+      </button>
+      <button class="nav-btn" data-page="completed" onclick="switchPage('completed', event)">
+        <i class="fa-solid fa-check-double"></i> Sudah Selesai
+      </button>
+    </nav>
+
+    <div class="sidebar-footer">
+      <p>Dikembangkan oleh</p>
+      <strong>Muhammad Dzaky Farhat</strong>
+      <span>Kelas XI International 1</span>
+    </div>
+  </aside>
+
+  <!-- Konten Utama -->
+  <main>
+    <header class="header-bar">
+      <button class="menu-toggle" onclick="toggleSidebar()" aria-label="Buka menu">
+        <i class="fa-solid fa-bars"></i>
+      </button>
+      <div class="page-title">
+        <h1 id="header-text">Beranda</h1>
+        <p id="header-date"></p>
+      </div>
+      <button class="btn-add" onclick="openModal()">
+        <i class="fa-solid fa-plus"></i> Tambah Tugas
+      </button>
+    </header>
+
+    <!-- Halaman Beranda -->
+    <section id="page-home" class="page active">
+      <div class="home-hero">
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-icon stat-blue"><i class="fa-solid fa-book"></i></div>
+            <div class="stat-info">
+              <span>Total Tugas</span>
+              <h2 id="stat-total">0</h2>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon stat-amber"><i class="fa-solid fa-clock"></i></div>
+            <div class="stat-info">
+              <span>Belum Selesai</span>
+              <h2 id="stat-pending">0</h2>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon stat-green"><i class="fa-solid fa-circle-check"></i></div>
+            <div class="stat-info">
+              <span>Sudah Selesai</span>
+              <h2 id="stat-completed">0</h2>
+            </div>
+          </div>
+        </div>
+
+        <div class="progress-card">
+          <div class="progress-ring" id="progress-ring" style="--pct:0;">
+            <div class="progress-ring-inner" id="progress-pct">0%</div>
+          </div>
+          <span>Tugas selesai</span>
+        </div>
+      </div>
+
+      <h2 class="section-title"><i class="fa-solid fa-list-check"></i> Tugas Mendatang</h2>
+      <div id="home-recent-grid" class="task-grid"></div>
+    </section>
+
+    <!-- Halaman Belum Selesai -->
+    <section id="page-pending" class="page">
+      <div id="pending-grid" class="task-grid"></div>
+    </section>
+
+    <!-- Halaman Selesai -->
+    <section id="page-completed" class="page">
+      <div id="completed-grid" class="task-grid"></div>
+    </section>
+  </main>
+
+  <!-- Modal Input Tugas -->
+  <div class="modal-backdrop" id="modal-task">
+    <div class="modal">
+      <div class="modal-header">
+        <h3>Tambah Tugas Baru</h3>
+        <button onclick="closeModal()" aria-label="Tutup"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <form id="task-form" onsubmit="saveTask(event)">
+        <div class="form-group">
+          <label>Judul Tugas / Materi</label>
+          <input type="text" id="task-title" class="form-control" placeholder="Contoh: Latihan Soal Bab 2" required>
+        </div>
+
+        <div class="form-group">
+          <label>Mata Pelajaran</label>
+          <select id="task-subject" class="form-control" required>
+            <option value="" disabled selected>-- Pilih Mata Pelajaran --</option>
+            <option value="Matematika">Matematika</option>
+            <option value="Fisika">Fisika</option>
+            <option value="Biologi">Biologi</option>
+            <option value="Kimia">Kimia</option>
+            <option value="Sejarah">Sejarah</option>
+            <option value="Sosiologi">Sosiologi</option>
+            <option value="Geografi">Geografi</option>
+            <option value="Ekonomi">Ekonomi</option>
+            <option value="B. Inggris">B. Inggris</option>
+            <option value="B. Indonesia">B. Indonesia</option>
+            <option value="Agama">Agama</option>
+            <option value="Bimbingan Konseling">Bimbingan Konseling</option>
+          </select>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Tenggat Waktu</label>
+            <input type="date" id="task-deadline" class="form-control" required>
+          </div>
+          <div class="form-group">
+            <label>Prioritas</label>
+            <select id="task-priority" class="form-control">
+              <option value="Rendah">Rendah</option>
+              <option value="Sedang" selected>Sedang</option>
+              <option value="Tinggi">Tinggi</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Catatan Tambahan</label>
+          <textarea id="task-desc" class="form-control" rows="3" placeholder="Contoh: Kerjakan nomor 1-5 di buku PR."></textarea>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn-add btn-cancel" onclick="closeModal()">Batal</button>
+          <button type="submit" class="btn-add">Simpan Tugas</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
